@@ -5,7 +5,8 @@ import * as User from "../data/user.js"
 const router = Router()
 
 router.get("/", (req, res) => {
-    res.send('Users')
+    const users = User.getUsers()
+    res.json(users)
 })
 
 export default router

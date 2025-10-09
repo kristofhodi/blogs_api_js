@@ -23,7 +23,7 @@ export const savePost = (title, content, userId) =>
 
 export const updatePost = (id, title, content) =>
   db
-    .prepare("UPDATE cars SET title = ?, content = ? WHERE id = ?")
+    .prepare("UPDATE posts SET title = ?, content = ? WHERE id = ?")
     .run(title, content, id);
 
 export const deletePost = (id) =>

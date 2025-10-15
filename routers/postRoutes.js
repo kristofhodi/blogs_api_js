@@ -1,11 +1,34 @@
 import express from "express"
 import * as Post from "../data/post.js"
+import bcrypt from "bcrypt"
+import * as User from "../data/user.js"
+import jwt from "jsonwebtoken"
 
 const router = express.Router()
 
 router.get("/", (req, res) => {
   const posts = Post.getPosts()
   res.status(200).json(posts)
+})
+
+router.post('/login', (req, res) => {
+  const {email, password} = req.body
+  if (!email || !password) {
+    res.status(400).json({message: "invalid credits"});
+  }
+  const user = User.getUserByEmail(email)
+  if (!user) {
+    return res.status(400).json({message: "invalid creds"})
+  }
+  // if (!bcrypt.compareSync(password, user.password)) {
+  //   return res.status(400).json({message: "invalid creds"})
+  // }
+  const token = jwt.sign({id : user.id, email : user.email}, 'secret_key', {expiresIn: '30m'})
+  res.json({token: token})
+})
+
+router.get("/my", (req, res) => {
+
 })
 
 router.get("/:id", (req, res) => {
@@ -15,6 +38,14 @@ router.get("/:id", (req, res) => {
   }
   res.status(200).json(post)
 })
+
+function auth(req, res, next) {
+  const accessToken = req.headers.authorize
+  if (!accessToken) {
+    return res.status(401).json({message : "nope"})
+  }
+  const token = jwt.verify(accessToken, "secret_key")
+}
 
 router.post("/", (req, res) => {
   const { title, content, userId } = req.body

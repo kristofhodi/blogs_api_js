@@ -62,6 +62,29 @@ router.post("/login", (req, res) => {
   res.json({ token: token });
 });
 
+router.patch("/:id", auth, (req, res) => {
+  const id = +req.params.id;
+  if (id != +req.params.id) {
+    res.status(400).json({ message: "invalid user id" });
+  }
+  const { name, email, password } = req.body;
+  let user = User.getUserById(id);
+  let hashedPassword;
+  if (password) {
+    const salt = bcrypt.genSaltSync(12);
+    const hashedPassword = bcrypt.hashSync(password, salt);
+  }
+  User.updateUser(
+    id,
+    name || user.name,
+    email || user.email,
+    hashedPassword || user.password
+  );
+  user = User.getUserById(id);
+  delete user.password;
+  res.status(201).json(user);
+});
+
 router.put("/:id", (req, res) => {
   let user = User.getUserById(+req.params.id);
   if (!user) {

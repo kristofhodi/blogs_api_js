@@ -9,7 +9,7 @@ function auth(req, res, next) {
     }
     const token = jwt.verify(accessToken.split("")[1], "secret_key");
     const now = Math.floor(Date.now() / 1000);
-    if (!token || token.exp ||token.exp < now) {
+    if (!token || token?.exp < now) {
       return res.status(403).json({ message: "access denied" });
     }
     const user = User.getUserById(token.id);
